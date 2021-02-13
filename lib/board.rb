@@ -1,7 +1,7 @@
 class Board
 
     def initialize(board=nil)
-        (board = nil)? @board = Array.new(8){Array.new(8){" "}} : @board = board
+        (board == nil)? @board = Array.new(8){Array.new(8){" "}} : @board = board
     end
 
     def to_json
@@ -24,8 +24,11 @@ class Board
 
     def convert_cords(cords)
         cords = cords.split(',')
-        cords[0] =  convert_x_cords(cords[0].to_i)
-        cords[1] =  convert_y_cords(cords[1])
+        x = cords[1]
+        y = cords[0]
+        cords[0] =  convert_y_cords(x.to_i)
+        cords[1] =  convert_x_cords(y)
+        
         return cords
     end
 
@@ -33,20 +36,21 @@ class Board
         @board[cord[0]][cord[1]] = piece
     end
 
-    def get_cord_piece(cord)
-        cord = convert_cords(cord)
-        return @board[cord[0]][cord[1]] 
-    end
-        
-    def convert_x_cords(cord)
-        x_axis_key = { 8 => 0, 7 => 1,6 => 2,5 => 3,4 => 4,3 => 5,2 => 6,1 => 7}
-        return x_axis_key[cord]
+    def get_piece(cord)
+
+        return  @board[cord[0]][cord[1]]
     end
 
+         
     def convert_y_cords(cord)
-        cord = cord.downcase
-        y_axis_key = { "a" => 0, "b" => 1,"c" => 2,"d" => 3,"e" => 4,"f" => 5,"g" => 6,"h" => 7}
+        y_axis_key = { 8 => 0, 7 => 1,6 => 2,5 => 3,4 => 4,3 => 5,2 => 6,1 => 7}
         return y_axis_key[cord]
+    end
+
+    def convert_x_cords(cord)
+        cord = cord.downcase
+        x_axis_key = { "a" => 0, "b" => 1,"c" => 2,"d" => 3,"e" => 4,"f" => 5,"g" => 6,"h" => 7}
+        return x_axis_key[cord]
     end
 
     def to_s
@@ -55,17 +59,17 @@ class Board
         return_str = String.new()
 
         @board.each_with_index do |row, row_index|
-            return_str +="\n  "
+            return_str +="\n\t  "
             return_str += ("─" * 33 )
-            return_str +="\n#{left_key.pop} "
+            return_str +="\n\t#{left_key.pop} "
             row.each_with_index do |column, column_index|
                 return_str += "│ #{column} "
             end
             return_str +="│"
         end
-        return_str +="\n  "
+        return_str +="\n\t  "
         return_str += ("─" * 33 )
-        return_str +="\n  "
+        return_str +="\n\t  "
         while(bottom_key.length > 0)
             return_str += ("  #{bottom_key.pop} ")
         end
@@ -74,12 +78,3 @@ class Board
     end
 end
 
-a = Board.new()
-puts a.to_s
-b =  a.convert_cords("7,c")
-a.place_piece(b, "♚")
-puts a.to_s
-a.move_piece("7,c","1,a")
-puts a.to_s
-puts a.get_cord_piece("7,c")
-puts a.get_cord_piece("1,a")

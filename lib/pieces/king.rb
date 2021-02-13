@@ -1,12 +1,15 @@
 require_relative 'piece'
 class King < Piece
+    attr_accessor :name,:owner,:ply_num
 
     def initialize(ply_num,owner)
-        super(owner)
-        (ply_num == 1)? @symbol = "♚" : @symbol = "♔"
 
+        (ply_num == 1)? @symbol = "♚" : @symbol = "♔"
+        @owner = owner
+
+        @name = "King"
+    end
+    def get_num ()
+        return @ply_num
     end
 end
-
-a = King.new(1,"bill")
-puts a
