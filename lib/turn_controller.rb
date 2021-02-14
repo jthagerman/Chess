@@ -75,26 +75,35 @@ class Turn_controller
                 if(check_valid_input(input))
                     spot = @board_controller.get_piece_at_pos(input)
                     if(spot.class == String)
-                        puts "hi"
-                        @board_controller.place_piece(input,piece)
-                        @board_controller.place_piece(cord," ")
-                        valid_move = true    
-                    elsif(spot.get_num != player.player_number)
-
-                        #need to check if valid piece move 
-                        #need to convert cordinates
-                        if(piece.valid_move(cord,input,spot))
+                        if(piece.valid_move(@board_controller.convert_cords(cord),@board_controller.convert_cords(input),-1))
                             @board_controller.place_piece(input,piece)
                             @board_controller.place_piece(cord," ")
                             valid_move = true    
                         else
-                            "The #{piece.name} cannot move that way"
+                            puts "You cannot move your #{piece.name} there."
+                        end
+                    elsif(spot.get_num != player.player_number)
+                        if(piece.valid_move(@board_controller.convert_cords(cord),@board_controller.convert_cords(input),spot.get_num))
+                            @board_controller.place_piece(input,piece)
+                            @board_controller.place_piece(cord," ")
+                            valid_move = true    
+                        else
+                            puts "You cannot move your #{piece.name} there."
                         end
                     else
                         puts "Your Piece is in that spot"
                     end
                 end
             end
+        end
+    end
+
+    def check_clear_path(start_spot,end_spot,piece)
+        if piece.name = "rook"
+            return true
+        else
+            puts "hit"
+            return false
         end
     end
 

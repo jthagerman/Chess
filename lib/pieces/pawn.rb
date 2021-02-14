@@ -7,10 +7,9 @@ class Pawn < Piece
         @ply_num = ply_num
         @owner = owner
         @name = "pawn"
-
-        #MOVES VARIABLE
-    
+        @turns = 0    
     end
+
     def valid_move(start_pos,end_pos,end_pos_contents)
         start_x = start_pos[0]
         start_y = start_pos[1]
@@ -19,19 +18,42 @@ class Pawn < Piece
 
         #black
         if(ply_num == 1)
-            #begining space
-            if(start_x == 6)
-                if(start_y-end_y > 2) ||(start_x)
-                    return false
-                end 
-            else
+            if(end_x >= start_x)
+                return false
             end
 
+            if(@turns == 0) && (start_x - end_x == 2) && (start_y == end_y)
+                @turns += 1
+                return true
+            else
+                if((start_x - end_x == 1))
+                    if(start_y == end_y)
+                        return true
+                    elsif((start_y - end_y) < 2) && ((start_y - end_y) >= -1) && (end_pos_contents == 2)
+                        return true
+                    end
+                end
+            end
         #white
         else
+            if(end_x <= start_x)
+                return false
+            end
+            if(@turns == 0) && (start_x - end_x == -2) && (start_y == end_y)
+                @turns += 1
+                return true
+            else
+                if((start_x - end_x == -1))
+                    if(start_y == end_y)
+                        return true
+                    elsif((start_y - end_y) < 2) && ((start_y - end_y) >= -1) && (end_pos_contents == 1)
+                        return true
+                    end
+                end
+            end
 
         end
-
+        return false
     end
 
     def get_num ()

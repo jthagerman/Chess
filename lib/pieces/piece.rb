@@ -21,7 +21,6 @@ class Piece
         return @ply_num
     end
 
-
     def to_s
         return @symbol
     end
