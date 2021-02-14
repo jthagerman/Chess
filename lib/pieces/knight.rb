@@ -5,6 +5,7 @@ class Knight < Piece
     def initialize(ply_num,owner)
         (ply_num == 1)? @symbol = "♞" : @symbol = "♘"
         @owner = owner
+        @ply_num = ply_num
 
         @name = "Knight"
 

@@ -14,9 +14,8 @@ class Turn_controller
         puts "Welcome To Chess!"
         get_player_names()
         @board_controller = Board_Controller.new(@player1,@player2)
-        puts @board_controller.get_board
+        puts @board_controller
         take_turns(@player_one,@player_two)
-
     end
 
     def get_player_names()
@@ -30,39 +29,73 @@ class Turn_controller
 
     def take_turns(player_one,player_two)
         while(true)
-            get_turn_input(player_one)
-            get_turn_input(player_two)
+            get_move_piece(player_one)
+            puts @board_controller
+            get_move_piece(player_two)
+            puts @board_controller
         end
-
     end
 
-    def get_turn_input(player)
-        puts "\nIt is #{player.name}'s turn, please select piece to move"
-        puts player.player_number
-        input = gets.chomp
-
-
-        #check if it is the players piece
-        while(!check_valid_input(input))        
+    def get_move_piece(player,repeat = false)
+        if(repeat == false)
+            puts "\nIt is #{player.name}'s turn, please select piece to move"
+        end
+        valid_piece = false
+        while(!valid_piece)        
             input = gets.chomp
+            if(check_valid_input(input))
+                piece = @board_controller.get_piece_at_pos(input)
+                if(piece.class == String)
+                    puts "Please Select A Non-Empty Space"
+                else
+                    if(piece.get_num == player.player_number)
+                        valid_piece = true
+                        ###NEED TO CHECK IF THE PIECE EVEN IS MOVABLE
+                    else
+                         puts "That piece is not yours"
+                    end
+                end
+            end
         end
-       
-        piece = @board_controller.get_piece_at_pos(input)
-        puts piece
-        puts piece.get_num
+        get_move_pos(player,input,piece)   
+    end
 
- 
-        if(piece.get_num == player.player_number)
-            puts "hi"
-        end
+    def get_move_pos(player,cord,piece)   
 
+        puts "\nPlease Select Position to Move Your #{piece.name}\nType Change to Change Piece To Move"
 
-        puts "Please Select Position to move your # {piece}"
-        input = gets.chomp
-        while(!check_valid_input(input))
+        valid_move = false
+        while(!valid_move)
             input = gets.chomp
+            if (input.downcase == "change")
+                puts "Please select piece to move"
+                get_move_piece(player,true)
+                break
+            else
+                if(check_valid_input(input))
+                    spot = @board_controller.get_piece_at_pos(input)
+                    if(spot.class == String)
+                        puts "hi"
+                        @board_controller.place_piece(input,piece)
+                        @board_controller.place_piece(cord," ")
+                        valid_move = true    
+                    elsif(spot.get_num != player.player_number)
+
+                        #need to check if valid piece move 
+                        #need to convert cordinates
+                        if(piece.valid_move(cord,input,spot))
+                            @board_controller.place_piece(input,piece)
+                            @board_controller.place_piece(cord," ")
+                            valid_move = true    
+                        else
+                            "The #{piece.name} cannot move that way"
+                        end
+                    else
+                        puts "Your Piece is in that spot"
+                    end
+                end
+            end
         end
-        puts input
     end
 
     def check_valid_input(input)

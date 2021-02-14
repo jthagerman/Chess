@@ -47,9 +47,23 @@ class Board_Controller
         return @board.get_piece(cord)
     end
 
+    def place_piece(pos,piece)
+        cord = @board.convert_cords(pos)
+        @board.place_piece(cord,piece)
+    end
+
 
     def get_board()
         return @board.to_s
+    end
+
+    def to_s
+        return @board.to_s
+    end
+
+
+    def check_empty_space()
+        #to_do
     end
 
 

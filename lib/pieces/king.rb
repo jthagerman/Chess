@@ -6,6 +6,7 @@ class King < Piece
 
         (ply_num == 1)? @symbol = "♚" : @symbol = "♔"
         @owner = owner
+        @ply_num = ply_num
 
         @name = "King"
     end
