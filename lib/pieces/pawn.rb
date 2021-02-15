@@ -23,12 +23,16 @@ class Pawn < Piece
             end
 
             if(@turns == 0) && (start_x - end_x == 2) && (start_y == end_y)
-                @turns += 1
-                return true
+                if(end_pos_contents == -1)
+                    @turns += 1
+                    return true
+                end
             else
                 if((start_x - end_x == 1))
                     if(start_y == end_y)
-                        return true
+                        if(end_pos_contents == -1)
+                            return true
+                        end
                     elsif((start_y - end_y) < 2) && ((start_y - end_y) >= -1) && (end_pos_contents == 2)
                         return true
                     end
@@ -40,12 +44,16 @@ class Pawn < Piece
                 return false
             end
             if(@turns == 0) && (start_x - end_x == -2) && (start_y == end_y)
-                @turns += 1
-                return true
+                if(end_pos_contents == -1)
+                    @turns += 1
+                    return true
+                end
             else
                 if((start_x - end_x == -1))
                     if(start_y == end_y)
-                        return true
+                        if(end_pos_contents == -1)
+                            return true
+                        end
                     elsif((start_y - end_y) < 2) && ((start_y - end_y) >= -1) && (end_pos_contents == 1)
                         return true
                     end

@@ -10,6 +10,8 @@ require_relative 'pieces/queen'
 class Board_Controller
 
     def initialize(player1,player2)
+        @player1 = player1
+        @player2 = player2
         @board = Board.new()
         fillBoard(player1,player2)
     end
@@ -63,6 +65,11 @@ class Board_Controller
         return x_axis_key[cord]
     end
 
+    def get_piece_at_converted_cords(pos)
+        return @board.get_piece(pos)
+    end
+        
+
 
     def get_piece_at_pos(pos)
         cord = convert_cords(pos)
@@ -70,7 +77,21 @@ class Board_Controller
     end
 
     def place_piece(pos,piece)
+       # puts piece.class
+       
+
         cord = convert_cords(pos)
+        if (piece != " ")
+            if(piece.name == "pawn")
+                if(piece.ply_num == 1) && (cord[0] == 0)
+                    puts "hi"
+                    piece = Queen.new(1,@player1)
+                elsif(piece.ply_num == 2) && (cord[8] == 0)
+                    puts "hi"
+                    piece = Queen.new(2,@player2)
+                end
+            end
+        end
         @board.place_piece(cord,piece)
     end
 

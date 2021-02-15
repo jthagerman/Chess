@@ -7,6 +7,7 @@ require_relative 'pieces/knight'
 require_relative 'pieces/bishop'
 require_relative 'pieces/king'
 require_relative 'pieces/queen'
+require_relative 'move_validator'
 
 class Turn_controller
 
@@ -50,7 +51,7 @@ class Turn_controller
                 else
                     if(piece.get_num == player.player_number)
                         valid_piece = true
-                        ###NEED TO CHECK IF THE PIECE EVEN IS MOVABLE
+                        
                     else
                          puts "That piece is not yours"
                     end
@@ -76,17 +77,25 @@ class Turn_controller
                     spot = @board_controller.get_piece_at_pos(input)
                     if(spot.class == String)
                         if(piece.valid_move(@board_controller.convert_cords(cord),@board_controller.convert_cords(input),-1))
-                            @board_controller.place_piece(input,piece)
-                            @board_controller.place_piece(cord," ")
-                            valid_move = true    
+                            if(check_clear_path(cord,input,piece))
+                                @board_controller.place_piece(input,piece)
+                                @board_controller.place_piece(cord," ")
+                                valid_move = true    
+                            else
+                                puts "pieces are in the way"
+                            end
                         else
                             puts "You cannot move your #{piece.name} there."
                         end
                     elsif(spot.get_num != player.player_number)
                         if(piece.valid_move(@board_controller.convert_cords(cord),@board_controller.convert_cords(input),spot.get_num))
-                            @board_controller.place_piece(input,piece)
-                            @board_controller.place_piece(cord," ")
-                            valid_move = true    
+                            if(check_clear_path(cord,input,piece))
+                                @board_controller.place_piece(input,piece)
+                                @board_controller.place_piece(cord," ")
+                                valid_move = true    
+                            else
+                                puts "pieces are in the way"
+                            end  
                         else
                             puts "You cannot move your #{piece.name} there."
                         end
@@ -99,12 +108,20 @@ class Turn_controller
     end
 
     def check_clear_path(start_spot,end_spot,piece)
-        if piece.name = "rook"
-            return true
+        start_pos = @board_controller.convert_cords(start_spot)
+        end_spot = @board_controller.convert_cords(end_spot)
+        start_x = start_pos[0]
+        start_y = start_pos[1]
+        end_x = end_spot[0]
+        end_y = end_spot[1]
+ 
+        if piece.name == "knight"
+            return true       
         else
-            puts "hit"
-            return false
-        end
+            valid = Move_validator.new(@board_controller,start_x,start_y,end_x,end_y)
+            return valid.validate()
+        end    
+
     end
 
     def check_valid_input(input)
