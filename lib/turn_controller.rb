@@ -15,6 +15,7 @@ class Turn_controller
         puts "Welcome To Chess!"
         get_player_names()
         @board_controller = Board_Controller.new(@player1,@player2)
+        @check_mate = false
         puts @board_controller
         take_turns(@player_one,@player_two)
     end
@@ -29,12 +30,32 @@ class Turn_controller
     end
 
     def take_turns(player_one,player_two)
-        while(true)
+        
+        while(!@check_mate)
+            if(in_check?(player_one,player_two)) == true
+                if(checkmate?(player_one,player_two))
+                    break
+                end
+                puts "player one in check"
+            end  
+
             get_move_piece(player_one)
             puts @board_controller
+
+            if(in_check?(player_two,player_one)) == true
+                if(checkmate?(player_two,player_one))
+                    break
+                end
+                puts "player two in check"
+            end  
+
+            in_check?(player_two,player_one)
             get_move_piece(player_two)
+          
             puts @board_controller
         end
+        puts "game over"
+        exit(0)
     end
 
     def get_move_piece(player,repeat = false)
@@ -108,13 +129,21 @@ class Turn_controller
     end
 
     def check_clear_path(start_spot,end_spot,piece)
-        start_pos = @board_controller.convert_cords(start_spot)
-        end_spot = @board_controller.convert_cords(end_spot)
-        start_x = start_pos[0]
-        start_y = start_pos[1]
-        end_x = end_spot[0]
-        end_y = end_spot[1]
- 
+
+        if(start_spot.class != Array)
+            start_pos = @board_controller.convert_cords(start_spot)
+            end_spot = @board_controller.convert_cords(end_spot)
+            start_x = start_pos[0]
+            start_y = start_pos[1]
+            end_x = end_spot[0]
+            end_y = end_spot[1]
+        else
+            start_x = start_spot[0]
+            start_y = start_spot[1]
+            end_x = end_spot[0]
+            end_y = end_spot[1]
+        end
+       
         if piece.name == "knight"
             return true       
         else
@@ -148,6 +177,69 @@ class Turn_controller
 
     def get_name_input()
         return (gets.chomp)
+    end
+
+    def in_check?(player,opponent)
+        king_cords = @board_controller.get_player_king_pos(player.player_number)
+        opp_pieces = @board_controller.get_player_pieces(opponent.player_number)
+        king_piece = @board_controller.get_piece_at_converted_cords(king_cords)
+
+        opp_pieces.each do |pos|
+            piece = @board_controller.get_piece_at_converted_cords(pos)    
+            if(piece.valid_move(pos,king_cords,king_piece.get_num))  
+                if(check_clear_path(pos,king_cords,piece))
+                    puts("check")
+                return true
+                end
+            end   
+        end
+        return false
+    end
+
+    def check(king_cords,opp_pieces,king_piece)
+        opp_pieces.each do |pos|
+            piece = @board_controller.get_piece_at_converted_cords(pos)    
+            if(piece.valid_move(pos,king_cords,king_piece.get_num))  
+                if(check_clear_path(pos,king_cords,piece))
+                    return true
+                end
+            end   
+        end
+        return false
+    end
+
+    def checkmate?(loser,winner)
+        king_cords = @board_controller.get_player_king_pos(loser.player_number)
+        king_piece = @board_controller.get_piece_at_converted_cords(king_cords)
+        opp_pieces = @board_controller.get_player_pieces(winner.player_number)
+        x = king_cords[0]
+        y = king_cords[1]
+
+        moves = [[x+1,y],[x-1,y],[x,y+1],[x,y+1],[x+1,y+1],[x-1,y-1],[x+1,y-1],[x-1,y+1]]
+
+        moves.each do |spot|
+            if((spot[0] >= 0) && (spot[0] <= 7) && (spot[1] >= 0) && (spot[1] <= 7))
+
+                move_space = @board_controller.get_piece_at_converted_cords(spot)
+                if(move_space.class != String)
+
+                    if(move_space.ply_num != loser.player_number)      
+                        puts move_space
+                        return false
+                    end
+                else      
+                    if(!check(spot,opp_pieces,king_piece))       
+                        puts move_space
+                        return false
+                    end  
+
+                end
+            end
+        end
+
+        puts "check mate"
+        @check_mate = true
+        return true
     end
 end
 

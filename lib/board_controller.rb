@@ -19,7 +19,7 @@ class Board_Controller
         #pawns
         (0..7).each do |el| 
             @board.place_piece([1,el],Pawn.new(2,player2))  
-            @board.place_piece([6,el],Pawn.new(1,player1))
+      #      @board.place_piece([6,el],Pawn.new(1,player1))
         end
         #rooks
         @board.place_piece([0,0],Rook.new(2,player2))
@@ -68,8 +68,39 @@ class Board_Controller
     def get_piece_at_converted_cords(pos)
         return @board.get_piece(pos)
     end
-        
+          
+    def get_player_pieces(player)
+        piece_list = Array.new()
+        @board.get_board().each_with_index do |row, row_index|
+            row.each_with_index do |column, column_index|        
+                spot = @board.get_piece([row_index,column_index])
+                if(spot.class != String)
+                    if (spot.ply_num == player)
+                        piece_list.push( [row_index, column_index])
+                    end
+                end
+            end
+        end
+        return piece_list
+    end
 
+    def get_player_king_pos(player)
+        king_pos = Array.new()
+        @board.get_board().each_with_index do |row, row_index|
+            row.each_with_index do |column, column_index|
+                
+                spot = @board.get_piece([row_index,column_index])
+
+                if(spot.class != String)
+                    if(spot.name == "King") && (spot.ply_num == player)
+                        king_pos = [row_index, column_index]
+                    end
+                end
+            end
+        end
+
+        return king_pos
+    end
 
     def get_piece_at_pos(pos)
         cord = convert_cords(pos)
@@ -77,9 +108,6 @@ class Board_Controller
     end
 
     def place_piece(pos,piece)
-       # puts piece.class
-       
-
         cord = convert_cords(pos)
         if (piece != " ")
             if(piece.name == "pawn")
@@ -94,7 +122,6 @@ class Board_Controller
         end
         @board.place_piece(cord,piece)
     end
-
 
     def get_board()
         return @board.to_s
@@ -124,8 +151,6 @@ class Board_Controller
         return return_str
     end
   
-
-
     def check_empty_space()
         #to_do
     end
