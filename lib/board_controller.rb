@@ -19,7 +19,7 @@ class Board_Controller
         #pawns
         (0..7).each do |el| 
             @board.place_piece([1,el],Pawn.new(2,player2))  
-      #      @board.place_piece([6,el],Pawn.new(1,player1))
+            @board.place_piece([6,el],Pawn.new(1,player1))
         end
         #rooks
         @board.place_piece([0,0],Rook.new(2,player2))

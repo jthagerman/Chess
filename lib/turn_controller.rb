@@ -34,31 +34,34 @@ class Turn_controller
         while(!@check_mate)
             if(in_check?(player_one,player_two)) == true
                 if(checkmate?(player_one,player_two))
+                    puts "#{player_two.name} wins!"
                     break
                 end
                 puts "player one in check"
             end  
 
-            get_move_piece(player_one)
+            get_move_piece(player_one,player_two)
             puts @board_controller
 
             if(in_check?(player_two,player_one)) == true
                 if(checkmate?(player_two,player_one))
+                    puts "#{player_one.name} wins!"
                     break
                 end
                 puts "player two in check"
             end  
 
             in_check?(player_two,player_one)
-            get_move_piece(player_two)
+            get_move_piece(player_two,player_one)
           
             puts @board_controller
         end
         puts "game over"
+        puts "thanks for playing"
         exit(0)
     end
 
-    def get_move_piece(player,repeat = false)
+    def get_move_piece(player,opponent,repeat = false)
         if(repeat == false)
             puts "\nIt is #{player.name}'s turn, please select piece to move"
         end
@@ -79,10 +82,10 @@ class Turn_controller
                 end
             end
         end
-        get_move_pos(player,input,piece)   
+        get_move_pos(player,input,piece,opponent)   
     end
 
-    def get_move_pos(player,cord,piece)   
+    def get_move_pos(player,cord,piece,opponent)   
 
         puts "\nPlease Select Position to Move Your #{piece.name}\nType Change to Change Piece To Move"
 
@@ -91,7 +94,7 @@ class Turn_controller
             input = gets.chomp
             if (input.downcase == "change")
                 puts "Please select piece to move"
-                get_move_piece(player,true)
+                get_move_piece(player,opponent,true)
                 break
             else
                 if(check_valid_input(input))
@@ -101,7 +104,14 @@ class Turn_controller
                             if(check_clear_path(cord,input,piece))
                                 @board_controller.place_piece(input,piece)
                                 @board_controller.place_piece(cord," ")
-                                valid_move = true    
+                                if(in_check?(player,opponent))
+                                    puts "that move puts you in check" 
+                                    @board_controller.place_piece(input," ")
+                                    @board_controller.place_piece(cord,piece)
+                                    
+                                else
+                                    valid_move = true
+                                end   
                             else
                                 puts "pieces are in the way"
                             end
@@ -113,7 +123,13 @@ class Turn_controller
                             if(check_clear_path(cord,input,piece))
                                 @board_controller.place_piece(input,piece)
                                 @board_controller.place_piece(cord," ")
-                                valid_move = true    
+                                if(in_check?(player,opponent))
+                                    puts "that move puts you in check" 
+                                    @board_controller.place_piece(input,spot)
+                                    @board_controller.place_piece(cord,piece)                
+                                else
+                                    valid_move = true
+                                end   
                             else
                                 puts "pieces are in the way"
                             end  
@@ -188,7 +204,7 @@ class Turn_controller
             piece = @board_controller.get_piece_at_converted_cords(pos)    
             if(piece.valid_move(pos,king_cords,king_piece.get_num))  
                 if(check_clear_path(pos,king_cords,piece))
-                    puts("check")
+                    #puts("check")
                 return true
                 end
             end   
@@ -236,14 +252,13 @@ class Turn_controller
                 end
             end
         end
-
         puts "check mate"
         @check_mate = true
         return true
     end
 end
 
-a = Turn_controller.new()
+
 
 
 
